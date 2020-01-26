@@ -17,6 +17,7 @@
             android:layout_height="fill_parent"
             android:layout_width="fill_parent">
         </ImageView>
+        <!--
         <TextView
             android:id="@+id/scanned"
             android:layout_width="match_parent"
@@ -28,6 +29,50 @@
             android:textSize="20sp"
             android:layout_height="match_parent">
 
-        </TextView>
+        </TextView> -->
+        <LinearLayout android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:text = "Date: "
+                android:layout_width="wrap_content"
+                android:layout_height = "50dp"
+                android:id = "@+id/date_label"
+                android:textSize = "25dp"
+                android:layout_alignParentTop = "true"
+                android:textColor = "@color/colorTopBar"
+                android:layout_centerHorizontal = "true" />
+
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorTopBar"
+                android:textSize="25dp" />
+        </LinearLayout>
+        <LinearLayout android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:text = "Total: "
+                android:layout_width="wrap_content"
+                android:layout_height = "50dp"
+                android:id = "@+id/total_label"
+                android:textSize = "25dp"
+                android:layout_alignParentTop = "true"
+                android:textColor = "@color/colorTopBar"
+                android:layout_centerHorizontal = "true" />
+
+            <TextView
+                android:id="@+id/total_text"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+
+                android:textColor="@color/colorTopBar"
+                android:textSize="25dp" />
+        </LinearLayout>
+
     </LinearLayout>
 </RelativeLayout>

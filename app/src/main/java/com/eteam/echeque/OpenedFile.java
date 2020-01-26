@@ -26,6 +26,7 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class OpenedFile extends AppCompatActivity {
@@ -40,11 +41,11 @@ public class OpenedFile extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         imageView = findViewById(R.id.FullScr);
-        textView = findViewById(R.id.scanned);
+        //textView = findViewById(R.id.scanned);
         image = BitmapFactory.decodeFile(getIntent().getStringExtra("image_path"));
         imageView.setImageBitmap(image);
-        textView.setMovementMethod(new ScrollingMovementMethod());
-        textView.setText("Scanned text here");
+       // textView.setMovementMethod(new ScrollingMovementMethod());
+        //textView.setText("Scanned text here");
         if(image !=null) {
             runTextRecognition();
         }
@@ -72,7 +73,7 @@ public class OpenedFile extends AppCompatActivity {
         List<FirebaseVisionText.TextBlock> blocks = firebaseVisionText.getTextBlocks();
         if (blocks.size()==0) {
             Toast.makeText(this,"No text found!", Toast.LENGTH_SHORT).show();
-            textView.setText("No text found");
+           // textView.setText("No text found");
             return;
         }else {
             for (FirebaseVisionText.TextBlock block: firebaseVisionText.getTextBlocks()) {
@@ -96,7 +97,8 @@ public class OpenedFile extends AppCompatActivity {
                     }
                 }
             }
-            textView.setText(resultText);
+            //SimpleDateFormat
+            //textView.setText(resultText);
         }
 
            /* for(FirebaseVisionText.TextBlock ablock : firebaseVisionText.getTextBlocks() )
