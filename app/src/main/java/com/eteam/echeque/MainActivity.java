@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String currentPhotoPath;
 
         this.imageView = this.findViewById(R.id.cardImage);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -61,6 +60,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    /*
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  // prefix
+                ".jpg",         // suffix
+                storageDir      // directory
+        );
+        // Save a file: path for use with ACTION_VIEW intents
+        String currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }*/
+    String mCurrentPhotoPath;
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -73,16 +89,18 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        String currentPhotoPath = image.getAbsolutePath();
+        mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
+
     static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    final static int TAKE_PICTURE = 1;
     private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);;
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            // Create the File where the photo should go
             File photoFile = null;
             try {
                 photoFile = createImageFile();
@@ -92,24 +110,48 @@ public class MainActivity extends AppCompatActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                Toast.makeText(this,"File Created",Toast.LENGTH_SHORT).show();
+                Uri photoURI = FileProvider.getUriForFile(this, "com.eteam.echeque.fileprovider", photoFile);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+
             }
         }
-        /*
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }*/
-
     }
+   /*
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        Toast.makeText(this,"Requestcode: "+requestCode+" Result code: "+resultCode,Toast.LENGTH_SHORT).show();
+        try {
+            switch (requestCode) {
+                case 0: {
+                   // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+                        File file = new File(mCurrentPhotoPath);
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.fromFile(file));
+                        if (bitmap != null) {
+                            imageView.setImageBitmap(bitmap);
+                            Toast.makeText(this,"Success",Toast.LENGTH_SHORT).show();
+                        }else  Toast.makeText(this,"Fail",Toast.LENGTH_SHORT).show();
+                    }
+                    Toast.makeText(MainActivity.this, "REsult Ok!", Toast.LENGTH_SHORT).show();
+                    break;
+                //}
+            }
+
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+    }
+
+    */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-           // Bitmap imageBitmap = (Bitmap) extras.get("data");
-          //  imageView.setImageBitmap(imageBitmap);
+            File file = new File(mCurrentPhotoPath);
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(imageBitmap);
         }
     }
     @Override
@@ -171,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    dispatchTakePictureIntent();
+                   // dispatchTakePictureIntent();
                     Intent intent = new Intent(MainActivity.this, OpenedFile.class);
                     //intent.putExtra("info", photo);
                     startActivity(intent);
