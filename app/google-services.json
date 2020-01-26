@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "984728020389",
+    "firebase_url": "https://echeque-876a4.firebaseio.com",
+    "project_id": "echeque-876a4",
+    "storage_bucket": "echeque-876a4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984728020389:android:9d9312180174e98850f44c",
+        "android_client_info": {
+          "package_name": "com.eteam.echeque"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984728020389-cu7ppuj6d6pgbdhrrhgnnfitii2670s4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaCOsgwWm_Q0D5Gl6PxkOCVcY8jFXDm1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984728020389-cu7ppuj6d6pgbdhrrhgnnfitii2670s4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
