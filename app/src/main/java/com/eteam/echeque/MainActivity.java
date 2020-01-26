@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PICTURE_RESULT = 1;
     private ImageView imageView;
     private Uri imageUri;
-
+    private Bitmap imageBitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,48 +112,14 @@ public class MainActivity extends AppCompatActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Toast.makeText(this,"File Created",Toast.LENGTH_SHORT).show();
-                Uri photoURI = FileProvider.getUriForFile(this, "com.eteam.echeque.fileprovider", photoFile);
+                Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
 
+                    Bitmap bmp = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                    Toast.makeText(this, mCurrentPhotoPath, Toast.LENGTH_SHORT).show();
+                   // imageView.setImageBitmap(bmp);
             }
-        }
-    }
-   /*
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        Toast.makeText(this,"Requestcode: "+requestCode+" Result code: "+resultCode,Toast.LENGTH_SHORT).show();
-        try {
-            switch (requestCode) {
-                case 0: {
-                   // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-                        File file = new File(mCurrentPhotoPath);
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.fromFile(file));
-                        if (bitmap != null) {
-                            imageView.setImageBitmap(bitmap);
-                            Toast.makeText(this,"Success",Toast.LENGTH_SHORT).show();
-                        }else  Toast.makeText(this,"Fail",Toast.LENGTH_SHORT).show();
-                    }
-                    Toast.makeText(MainActivity.this, "REsult Ok!", Toast.LENGTH_SHORT).show();
-                    break;
-                //}
-            }
-
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
-    }
-
-    */
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            File file = new File(mCurrentPhotoPath);
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            imageView.setImageBitmap(imageBitmap);
         }
     }
     @Override
@@ -215,7 +183,10 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                    // dispatchTakePictureIntent();
                     Intent intent = new Intent(MainActivity.this, OpenedFile.class);
-                    //intent.putExtra("info", photo);
+                    intent.putExtra("image_path",mCurrentPhotoPath);
+                    //Bundle b=new Bundle();
+                    //b.putParcelable("img",imageBitmap);//put your bitmap in
+                    //intent.putExtras(b);
                     startActivity(intent);
 
                 }

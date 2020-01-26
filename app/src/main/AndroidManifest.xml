@@ -8,7 +8,7 @@
 
         android:required="true" />
     <uses-permission android:name="android.permission.FLAG_GRANT_READ_URI_PERMISSION" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -24,12 +24,16 @@
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
+
             android:theme="@style/SplashScreen_style">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+                android:value="ocr" />
         </activity>
         <activity
             android:name=".MainActivity"
@@ -47,13 +51,14 @@
         -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.eteam.echeque.fileprovider"
+            android:authorities="com.example.android.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
     </application>
 
 </manifest>
