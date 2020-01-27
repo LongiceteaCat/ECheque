@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,10 +40,16 @@ import com.squareup.picasso.Target;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Permission;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -56,10 +64,13 @@ public class OpenedFile extends AppCompatActivity {
     private TextView textDate;
     private TextView textTotal;
     private Bitmap image;
+    private ArrayList<Float> floats;
     private String resultText;
     private Date date;
     private String pattern="\\d{2}\\. \\d{2}\\. \\d{4}";
     private String strFormat = new String("dd. mm .yyyy");
+    private String mCurrentPhotoPath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
@@ -142,17 +153,38 @@ public class OpenedFile extends AppCompatActivity {
 
 
             textTotal.setText(resultText);
-            String regex = "\\d{2}\\. \\d{2}\\. \\d{4}";
-            Matcher m = Pattern.compile(regex).matcher(resultText);
+            String float_regex = "\\d{2,3}(\\.|\\. |,)\\d{2}";
+            Matcher mt = Pattern.compile(float_regex).matcher(resultText);
+            ArrayList<Float> floats = new ArrayList<Float>();
+            if (mt.find()) {
+/*
+                while (mt.find()) {
+                    floats.add(Float.valueOf(mt.group()));
+                }
+                float max = floats.get(0);
+                for (int i = 1; i < floats.size(); i++) {
+                    if (floats.get(i) > max) {
+                        max = floats.get(i);
+                    }
+                }
+               // Toast.makeText(this,String.valueOf(Math.round(max)), Toast.LENGTH_LONG).show();
+                    //textTotal.setText(String.valueOf(max));
+
+                */
+               // Toast.makeText(this,mt.group(), Toast.LENGTH_LONG).show();
+                textTotal.setText(mt.group(0)+ " EUR");
+
+           }else {
+                Toast.makeText(this,"No price found!", Toast.LENGTH_SHORT).show();
+            }
+
+            String date_regex = "\\d{2}(\\.|-| |\\. |/|,)\\d{2}(\\.|-| |\\. |/|,)\\d{4}";
+            Matcher m = Pattern.compile(date_regex).matcher(resultText);
             if (m.find()) {
                 textDate.setText(m.group(0));
-                Toast.makeText(this,m.group(0), Toast.LENGTH_SHORT).show();
-//                System.out.print(m.group(1));
-                //System.out.print(m.group(2));
-                Toast.makeText(this,"Done!", Toast.LENGTH_SHORT).show();
 
             } else {
-                Toast.makeText(this,"No text found!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"No date found!", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -169,17 +201,16 @@ public class OpenedFile extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_scan:
-                Toast.makeText(this, "Scan", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Scanning", Toast.LENGTH_SHORT).show();
                 textDate.setText("");
                 runTextRecognition();
                 return true;
             case R.id.action_takeapic:
-                Toast.makeText(this,"Take a picture",Toast.LENGTH_SHORT).show();
-               // dispatchTakePictureIntent();
+
+               dispatchTakePictureIntent();
                 return true;
             case R.id.action_import:
                 ImportImage();
-                //pickImage();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -189,29 +220,76 @@ public class OpenedFile extends AppCompatActivity {
     private void ImportImage() {
         Intent i = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(i,RESULT_LOAD_IMAGE);
+        startActivityForResult(i,10);
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-            if(requestCode == 1 && resultCode == 0) {
+        if(requestCode ==10) {
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == 1 && resultCode == 0) {
                 return;
             }
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
 
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String picturePath = cursor.getString(columnIndex);
-                cursor.close();
-                image = BitmapFactory.decodeFile(picturePath);
-                imageView.setImageBitmap(image);
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+            image = BitmapFactory.decodeFile(picturePath);
+            imageView.setImageBitmap(image);
+        }
 
+    }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    final static int TAKE_PICTURE = 1;
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                if (photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(this,
+                            "com.example.android.fileprovider",
+                            photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                    image = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                    imageView.setImageBitmap(image);
+                }
+            }
+        }
     }
 
 

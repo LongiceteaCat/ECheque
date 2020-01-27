@@ -3,7 +3,8 @@
 <item android:drawable="@color/colorTopBar"/>
 
 <item>
-    <bitmap android:src="@drawable/logo2"
-        android:gravity="center" />
+    <bitmap android:src="@drawable/logo_5"
+        android:gravity="center"
+        />
 </item>
 </layer-list>

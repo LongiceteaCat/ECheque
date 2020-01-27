@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 Bitmap bmp = BitmapFactory.decodeFile(mCurrentPhotoPath);
-                Toast.makeText(this, mCurrentPhotoPath, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -132,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    dispatchTakePictureIntent();
                     Intent intent = new Intent(MainActivity.this, OpenedFile.class);
                     intent.putExtra("image_path",mCurrentPhotoPath);
                     startActivity(intent);

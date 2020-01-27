@@ -16,6 +16,6 @@
     <item
         android:id="@+id/action_idc"
         android:orderInCategory="3"
-        android:title="Idk"
+        android:title="Buy PRO version"
         app:showAsAction="never" />
 </menu>
