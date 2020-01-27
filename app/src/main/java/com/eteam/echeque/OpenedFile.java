@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -67,7 +68,6 @@ public class OpenedFile extends AppCompatActivity {
     private ArrayList<Float> floats;
     private String resultText;
     private Date date;
-    private String pattern="\\d{2}\\. \\d{2}\\. \\d{4}";
     private String strFormat = new String("dd. mm .yyyy");
     private String mCurrentPhotoPath;
 
@@ -157,20 +157,6 @@ public class OpenedFile extends AppCompatActivity {
             Matcher mt = Pattern.compile(float_regex).matcher(resultText);
             ArrayList<Float> floats = new ArrayList<Float>();
             if (mt.find()) {
-/*
-                while (mt.find()) {
-                    floats.add(Float.valueOf(mt.group()));
-                }
-                float max = floats.get(0);
-                for (int i = 1; i < floats.size(); i++) {
-                    if (floats.get(i) > max) {
-                        max = floats.get(i);
-                    }
-                }
-               // Toast.makeText(this,String.valueOf(Math.round(max)), Toast.LENGTH_LONG).show();
-                    //textTotal.setText(String.valueOf(max));
-
-                */
                // Toast.makeText(this,mt.group(), Toast.LENGTH_LONG).show();
                 textTotal.setText(mt.group(0)+ " EUR");
 
