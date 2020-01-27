@@ -1,11 +1,19 @@
 package com.eteam.echeque;
 
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,15 +33,33 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.security.Permission;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OpenedFile extends AppCompatActivity {
+    private static final int RESULT_LOAD_IMAGE = 1;
+    private static final int RESULT_OK = 1;
+    private static final int PERMISSION_REQUEST = 0;
+    private static final int SELECT_PICTURE = 1;
     private ImageView imageView;
-    private TextView textView;
+    private TextView textDate;
+    private TextView textTotal;
     private Bitmap image;
     private String resultText;
+    private Date date;
+    private String pattern="\\d{2}\\. \\d{2}\\. \\d{4}";
+    private String strFormat = new String("dd. mm .yyyy");
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
@@ -41,13 +67,29 @@ public class OpenedFile extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         imageView = findViewById(R.id.FullScr);
-        //textView = findViewById(R.id.scanned);
+        textDate = findViewById(R.id.date_text);
+        textTotal = findViewById(R.id.total_text);
         image = BitmapFactory.decodeFile(getIntent().getStringExtra("image_path"));
         imageView.setImageBitmap(image);
-       // textView.setMovementMethod(new ScrollingMovementMethod());
-        //textView.setText("Scanned text here");
+        textDate.setMovementMethod(new ScrollingMovementMethod());
+        textTotal.setMovementMethod(new ScrollingMovementMethod());
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
+        }
         if(image !=null) {
             runTextRecognition();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults){
+        switch (requestCode){
+            case PERMISSION_REQUEST:
+                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this,"Permissian granted!",Toast.LENGTH_SHORT).show();
+                } else{
+                    Toast.makeText(this,"Permissian not granted!",Toast.LENGTH_SHORT).show();
+                    finish();
+                }
         }
     }
     private void runTextRecognition(){
@@ -76,19 +118,19 @@ public class OpenedFile extends AppCompatActivity {
            // textView.setText("No text found");
             return;
         }else {
-            for (FirebaseVisionText.TextBlock block: firebaseVisionText.getTextBlocks()) {
+            for (FirebaseVisionText.TextBlock block : firebaseVisionText.getTextBlocks()) {
                 String blockText = block.getText();
                 Float blockConfidence = block.getConfidence();
                 List<RecognizedLanguage> blockLanguages = block.getRecognizedLanguages();
                 Point[] blockCornerPoints = block.getCornerPoints();
                 Rect blockFrame = block.getBoundingBox();
-                for (FirebaseVisionText.Line line: block.getLines()) {
+                for (FirebaseVisionText.Line line : block.getLines()) {
                     String lineText = line.getText();
                     Float lineConfidence = line.getConfidence();
                     List<RecognizedLanguage> lineLanguages = line.getRecognizedLanguages();
                     Point[] lineCornerPoints = line.getCornerPoints();
                     Rect lineFrame = line.getBoundingBox();
-                    for (FirebaseVisionText.Element element: line.getElements()) {
+                    for (FirebaseVisionText.Element element : line.getElements()) {
                         String elementText = element.getText();
                         Float elementConfidence = element.getConfidence();
                         List<RecognizedLanguage> elementLanguages = element.getRecognizedLanguages();
@@ -97,35 +139,25 @@ public class OpenedFile extends AppCompatActivity {
                     }
                 }
             }
-            //SimpleDateFormat
-            //textView.setText(resultText);
-        }
 
-           /* for(FirebaseVisionText.TextBlock ablock : firebaseVisionText.getTextBlocks() )
-            {
-                String text = ablock.getText();
-                textView.setText(text);
+
+            textTotal.setText(resultText);
+            String regex = "\\d{2}\\. \\d{2}\\. \\d{4}";
+            Matcher m = Pattern.compile(regex).matcher(resultText);
+            if (m.find()) {
+                textDate.setText(m.toString());
+                System.out.print(m.group(0));
+//                System.out.print(m.group(1));
+                //System.out.print(m.group(2));
+                Toast.makeText(this,"Done!", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this,"No text found!", Toast.LENGTH_SHORT).show();
             }
-        }*/
+        }
 
     }
-   /* private void processTextRecognitionResult(FirebaseVisionText texts){
-        List<FirebaseVisionText.TextBlock> blocks = texts.getTextBlocks();
-        if (blocks.size()==0) {
-            Toast.makeText(this,"No text found!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        resultText = "";
-        for (int i = 0;i<blocks.size();i++){
-            List<FirebaseVisionText.Line> lines = blocks.get(i).getLines();
-            for(int j = 0;j<lines.size();j++){
-                List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
-                for(int k = 0;k<elements.size();k++){
-                   resultText
-                }
-            }
-        }
-    }*/
+
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
        // Inflate the menu; this adds items to the action bar if it is present.
@@ -138,13 +170,91 @@ public class OpenedFile extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_scan:
                 Toast.makeText(this, "Scan", Toast.LENGTH_SHORT).show();
-                textView.setText("");
+                textDate.setText("");
                 runTextRecognition();
                 return true;
-
+            case R.id.action_takeapic:
+                Toast.makeText(this,"Take a picture",Toast.LENGTH_SHORT).show();
+               // dispatchTakePictureIntent();
+                return true;
+            case R.id.action_import:
+                ImportImage();
+                //pickImage();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
         }
+    }/*
+    public void pickImage() {
+
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Picasso.get().load(data.getData()).noPlaceholder().centerCrop().fit().into(target);
+
+
+        imageView.setImageBitmap(image);
+
+    }
+    private Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            image = bitmap;
+            imageView.setImageBitmap(image);
+
+        }
+
+        @Override
+        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+
+    };
+    @Override
+    public void onDestroy() {  // could be in onPause or onStop
+        Picasso.get().cancelRequest(target);
+        super.onDestroy();
+    }*/
+
+    private void ImportImage() {
+        Intent i = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i,RESULT_LOAD_IMAGE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+            Toast.makeText(this,"ActibvityREse",Toast.LENGTH_SHORT).show();
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+            image = BitmapFactory.decodeFile(picturePath);
+            imageView.setImageBitmap(image);
+
+
+
+    }
+
+
 }

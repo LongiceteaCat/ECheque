@@ -62,21 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    /*
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  // prefix
-                ".jpg",         // suffix
-                storageDir      // directory
-        );
-        // Save a file: path for use with ACTION_VIEW intents
-        String currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }*/
+
     String mCurrentPhotoPath;
 
     private File createImageFile() throws IOException {
@@ -115,10 +101,8 @@ public class MainActivity extends AppCompatActivity {
                 Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-
-                    Bitmap bmp = BitmapFactory.decodeFile(mCurrentPhotoPath);
-                    Toast.makeText(this, mCurrentPhotoPath, Toast.LENGTH_SHORT).show();
-                   // imageView.setImageBitmap(bmp);
+                Bitmap bmp = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                Toast.makeText(this, mCurrentPhotoPath, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -140,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 dispatchTakePictureIntent();
                 return true;
             case R.id.action_about:
-                Toast.makeText(this,"About",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"ECheque made by ETeam",Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -181,12 +165,8 @@ public class MainActivity extends AppCompatActivity {
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                   // dispatchTakePictureIntent();
                     Intent intent = new Intent(MainActivity.this, OpenedFile.class);
                     intent.putExtra("image_path",mCurrentPhotoPath);
-                    //Bundle b=new Bundle();
-                    //b.putParcelable("img",imageBitmap);//put your bitmap in
-                    //intent.putExtras(b);
                     startActivity(intent);
 
                 }

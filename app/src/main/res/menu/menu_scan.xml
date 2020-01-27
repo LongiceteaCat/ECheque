@@ -6,7 +6,19 @@
         android:id="@+id/action_scan"
         android:orderInCategory="2"
         android:icon="@drawable/ic_scan"
-        android:title="Import"
+        android:title="Scan"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_import"
+        android:icon="@drawable/ic_importphoto"
+        android:orderInCategory="1"
+        android:title="import"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_takeapic"
+        android:icon="@drawable/ic_takeapic"
+        android:orderInCategory="1"
+        android:title="Take a Picture"
         app:showAsAction="ifRoom" />
 
 </menu>
