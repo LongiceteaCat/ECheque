@@ -145,8 +145,8 @@ public class OpenedFile extends AppCompatActivity {
             String regex = "\\d{2}\\. \\d{2}\\. \\d{4}";
             Matcher m = Pattern.compile(regex).matcher(resultText);
             if (m.find()) {
-                textDate.setText(m.toString());
-                System.out.print(m.group(0));
+                textDate.setText(m.group(0));
+                Toast.makeText(this,m.group(0), Toast.LENGTH_SHORT).show();
 //                System.out.print(m.group(1));
                 //System.out.print(m.group(2));
                 Toast.makeText(this,"Done!", Toast.LENGTH_SHORT).show();
@@ -185,49 +185,7 @@ public class OpenedFile extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
 
         }
-    }/*
-    public void pickImage() {
-
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
-
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Picasso.get().load(data.getData()).noPlaceholder().centerCrop().fit().into(target);
-
-
-        imageView.setImageBitmap(image);
-
-    }
-    private Target target = new Target() {
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            image = bitmap;
-            imageView.setImageBitmap(image);
-
-        }
-
-        @Override
-        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
-
-    };
-    @Override
-    public void onDestroy() {  // could be in onPause or onStop
-        Picasso.get().cancelRequest(target);
-        super.onDestroy();
-    }*/
-
     private void ImportImage() {
         Intent i = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -238,21 +196,21 @@ public class OpenedFile extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-            Toast.makeText(this,"ActibvityREse",Toast.LENGTH_SHORT).show();
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            if(requestCode == 1 && resultCode == 0) {
+                return;
+            }
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
 
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-            image = BitmapFactory.decodeFile(picturePath);
-            imageView.setImageBitmap(image);
-
-
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+                image = BitmapFactory.decodeFile(picturePath);
+                imageView.setImageBitmap(image);
 
     }
 
