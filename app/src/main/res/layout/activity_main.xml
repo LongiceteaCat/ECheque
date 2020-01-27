@@ -14,21 +14,8 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent" />
 
-    <!--<android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@color/colorTopBar"/> -->
-    <!--<ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        app:srcCompat="@drawable/logo2"
-        android:contentDescription="Title" />
-    -->
 
-
+<!--
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -36,6 +23,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/colorTopBar"
-        app:srcCompat="@drawable/ic_takeapic" />
+        app:srcCompat="@drawable/ic_takeapic" />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

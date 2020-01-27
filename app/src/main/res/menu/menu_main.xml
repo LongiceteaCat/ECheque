@@ -3,12 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.eteam.echeque.MainActivity">
     <item
-        android:id="@+id/action_import"
-        android:orderInCategory="2"
-        android:icon="@drawable/ic_importphoto"
-        android:title="Import"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_takeapic"
         android:icon="@drawable/ic_takeapic"
         android:orderInCategory="1"

@@ -47,14 +47,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.imageView = this.findViewById(R.id.cardImage);
-        FloatingActionButton fab = findViewById(R.id.fab);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dispatchTakePictureIntent();
-            }
-        });
         setSupportActionBar(toolbar);
         GridLayout mainGrid = findViewById(R.id.mainGrid);
         setSingleEvent(mainGrid);
@@ -82,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int RESULT_LOAD_IMAGE = 1;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     final static int TAKE_PICTURE = 1;
     private void dispatchTakePictureIntent() {
@@ -116,13 +111,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.action_import:
-                Toast.makeText(this,"Import",Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.action_takeapic:
-                Toast.makeText(this,"Take a picture",Toast.LENGTH_SHORT).show();
                 dispatchTakePictureIntent();
                 return true;
+
             case R.id.action_about:
                 Toast.makeText(this,"ECheque made by ETeam",Toast.LENGTH_LONG).show();
                 return true;
@@ -133,45 +125,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private void setToggleEvent(GridLayout mainGrid) {
-        //Loop all child item of Main Grid
-        for (int i = 0; i < mainGrid.getChildCount(); i++) {
-            //You can see , all child item is CardView , so we just cast object to CardView
-            final CardView cardView = (CardView) mainGrid.getChildAt(i);
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (cardView.getCardBackgroundColor().getDefaultColor() == -1) {
-                        //Change background color
-
-                        Toast.makeText(MainActivity.this, "State : True", Toast.LENGTH_SHORT).show();
-
-                    } else {
-                        //Change background color
-
-                        Toast.makeText(MainActivity.this, "State : False", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
-    }
 
     private void setSingleEvent(GridLayout mainGrid) {
-        //Loop all child item of Main Grid
-        for (int i = 0; i < mainGrid.getChildCount(); i++) {
-            //You can see , all child item is CardView , so we just cast object to CardView
-            CardView cardView = (CardView) mainGrid.getChildAt(i);
-            final int finalI = i;
+
+            CardView cardView = (CardView) mainGrid.getChildAt(0);
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    dispatchTakePictureIntent();
                     Intent intent = new Intent(MainActivity.this, OpenedFile.class);
                     intent.putExtra("image_path",mCurrentPhotoPath);
                     startActivity(intent);
-
+                    mCurrentPhotoPath = "";
                 }
             });
-        }
+
     }
 
 }
